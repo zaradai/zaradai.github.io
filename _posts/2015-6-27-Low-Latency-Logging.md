@@ -57,3 +57,32 @@ it reported.
 I ran the tests using 5 pre-run iterations to warm up the code and 5 measurement runs each lasting 200 ms.
 
 The tests ran on my laptop, an Intel i5 CPU @ 2.53 Ghz and hit an SSD drive.
+
+##Results
+
+The table shows for each logger how many operations it was able to perform every millisecond.
+
+| Logger      | 1000000   | 100000    | 10000     | 1000      | 500       |
+|-------------|-----------|-----------|-----------|-----------|-----------|
+| Null Logger | 54514.805 | 56136.28  | 56773.805 | 55570.36  | 56077.728 |
+| Strict      | 57882.823 | 48719.072 | 35887.066 | 11680.522 | 6890.911  |
+| Proxy       | 58194.838 | 51543.935 | 44012.717 | 40470.767 | 30660.113 |
+
+![Logging Results](/images/fastlog_results.png)
+
+As you can see, the number of log operations for the strict logger begins to fall off as the load increases whilst the proxy logger is able to maintain a
+decent throughput.  To prevent back-pressure on the disruptor queue I ran with 64K slots in the disruptor queue.  To see the effect of an overworked queue and
+how it affects the timings I reran with a smaller queue size of 64.
+
+| 1000000   | 100000    | 10000    | 1000     | 500      |
+|-----------|-----------|----------|----------|----------|
+| 58920.604 | 54193.853 | 36859.89 | 19061.35 | 9962.844 |
+
+Clearly as the slots are exhausted pressure is placed on logging code and the performance starts to look like the strict logger.
+
+##Summary
+
+As designed the proxy logger is able to maintain fairly consistent latency through increasing loads whilst the StrictLogging logger shows a deterioration of
+performance as the number of log events increases.
+
+Depending on characteristics of the application, one should tweak the proxy logger queue configuration to maintain a desired latency profile.
