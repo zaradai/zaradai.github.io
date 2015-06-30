@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Low Latency Logging with scala-logging
+categories: [disruptor, latency, logging]
 ---
 
 Low latency application developers need to think carefully about how they log; In this blog I will describe the problems and provide a possible
