@@ -134,8 +134,6 @@ assertThat(colourLikes, hasValue("blue"));
 |:--------------:|:-------:|
 |contains all items in order|contains|
 |contains all items in any order|containsInAnyOrder|
-|
-
 |contains an item |  hasItem |
 |contains multiple items |  hasItems |
 |does not contain an item | not(hasItem |
