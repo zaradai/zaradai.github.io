@@ -79,7 +79,7 @@ assertThat(colours, containsInAnyOrder("blue", "red", "gold", "orange", "pink", 
 ```
 
 When looking for a specific item in the collection use
-[hasItem]("http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#hasItem(org.hamcrest.Matcher))
+[hasItem](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#hasItem(org.hamcrest.Matcher))
 
 ```java
 List<String> colours = Lists.newArrayList("blue", "red", "gold", "orange", "pink", "yellow");
@@ -96,7 +96,7 @@ List<String> colours = Lists.newArrayList("blue", "red", "gold", "orange", "pink
 assertThat(colours, hasItems("blue", "pink"));</pre>
 ```
 
-To test for size one can use [hasSize]("http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#hasSize(int))
+To test for size one can use [hasSize](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#hasSize(int))
 
 ```java
 List<String> colours = Lists.newArrayList("blue", "red", "gold", "orange", "pink", "yellow");
@@ -104,7 +104,7 @@ List<String> colours = Lists.newArrayList("blue", "red", "gold", "orange", "pink
 assertThat(colours, hasSize(6));
 ```
 
-To ensure the collection is empty use [empty]("http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#empty()) whilst for iterables use
+To ensure the collection is empty use [empty](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#empty()) whilst for iterables use
 [emptyIterable](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#emptyIterable())
 
 ```java
@@ -114,7 +114,7 @@ assertThat(colours, empty());
 assertThat(colours, emptyIterable());
 ```
 
-For maps there are a number of specialized *has* matchers [hasEntry]("http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#hasEntry(K, V)),
+For maps there are a number of specialized *has* matchers [hasEntry](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#hasEntry(K, V)),
  [hasKey](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#hasKey(K)),
 [hasValue](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html#hasValue(org.hamcrest.Matcher)) to deal with key/value and entries, e.g.
 the following test will check to see if the map contains a specific value.
