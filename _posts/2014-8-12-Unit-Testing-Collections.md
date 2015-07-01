@@ -128,7 +128,9 @@ colourLikes.put(24, "blue");
 assertThat(colourLikes, hasValue("blue"));
 ```
 
-##Quick matcher lookup
+##Matcher lookup
+
+Quick lookup table for available collection matchers
 
 | Test Condition | Matcher |
 |:--------------:|:-------:|
@@ -146,4 +148,101 @@ assertThat(colourLikes, hasValue("blue"));
 |Map contains an entry |  hasEntry |
 |Map contains a key |   hasKey    |
 |Map contains a value | hasValue |
+
+
+##Testing Interactions
+
+There are occasions where one needs to ensure a number of operations occur on an collection to fully cover the code.  A particular test to illustrate testing
+collection interactions using the Mockito mocking library is an atomic put operation on a concurrent map.
+
+The requirement of the code is to track the trading position for a number of accounts with the method under test returning a position object for a given
+account id.  The method is thread safe and guaranteed to return a position.  The code being tested is :-
+
+```java
+public class PositionBook {
+    private final Map<String, Position> positionByAccountId;
+
+    @Inject
+    PositionBook() {
+        positionByAccountId = createPositionMap();
+    }
+
+    protected Map<String, Position> createPositionMap() {
+        return Maps.newConcurrentMap();
+    }
+
+    public Position getPositionForAccount(String accountId) {
+        ConcurrentMap<String, Position> map = (ConcurrentMap<String, Position>)getPositionByAccountMap();
+
+        Position position = map.get(accountId);
+
+        if (position == null) {
+            position = createPosition(accountId);
+            // add atomically
+            Position previous = map.putIfAbsent(accountId, position);
+
+            if (previous != null) {
+                // some other thread already beat us to it so return this position.
+                return previous;
+            }
+        }
+
+        return position;
+    }
+
+    private Position createPosition(String accountId) {
+        return new Position(accountId);
+    }
+
+    private Map<String, Position> getPositionByAccountMap() {
+        return this.positionByAccountId;
+    }
+}
+```
+
+The most difficult part of the method is to test the state whereby another thread has inserted a position whilst the current thread is trying to insert.  The
+key is [putIfAbsent](http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ConcurrentMap.html#putIfAbsent(K,%20V)) which guarantees insertion atomicity
+by returning an existing entry if one exists.
+
+To test, I need to manipulate the code so that a value is returned when putIfAbsent is called.  I can then assert the returned value.  To do this the
+collection is mocked using Mockito and prepared appropriately to return the value.
+
+The unit test is then created thus:
+
+```java
+@Mock
+Map<String, Position> mockedMap;
+
+private PositionBook positionBook;
+
+@Before
+setUp() throws Exception {
+    // Ensure the map gets mocked
+    MockitoAnnotations.initMocks(this);
+    // create the object to test
+    positionBook = new PositionBook() {
+        @Override
+        protected Map<String, Position. createPositionMap() {
+            return mockedMap;
+        }
+    };
+}
+
+@Test
+public void shouldReturnExistingPositionIfNotAbsent() throws Exception {
+    String accountId = "test";
+    Position existing = mock(Position.class);
+    // setup the mocked map object to return the position
+    when(mockedMap.putIfAbsent(anyString(), any(Position.class))).thenReturn(existing);
+    // test the method
+    Position res = positionBook.getPositionForAccount(accountId);
+
+    assertThat(res, is(existing));
+}
+```
+
+1. Using @Mock annotation, build the mocked map.
+2. Within setUp create an anonymous class that overrides the map creation so that our mocked map is used by the function under test.
+3. Prepare the mock's behaviour to exhibit our desired test scenario.
+4. Finally assert that we are returned the correct position.
 
